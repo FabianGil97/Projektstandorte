@@ -540,20 +540,38 @@
 
     </script>
 <script>
-  function sendHeight() {
+(function () {
+  function postHeight() {
     const height = Math.max(
       document.body.scrollHeight,
       document.documentElement.scrollHeight
     );
-    window.parent.postMessage({ iframeHeight: height }, "*");
+    window.parent.postMessage(
+      { type: "projektstandorte:height", height: height },
+      "*"
+    );
   }
 
-  window.addEventListener("load", sendHeight);
-  window.addEventListener("resize", sendHeight);
+  // initial
+  window.addEventListener("load", postHeight);
+  window.addEventListener("resize", postHeight);
 
-  // Falls Inhalte dynamisch laden (Bilder, Fonts, API, Animationen)
-  setInterval(sendHeight, 500);
+  // reagiert auf dynamische Änderungen (Bilder, Fonts, Accordion, etc.)
+  if ("ResizeObserver" in window) {
+    const ro = new ResizeObserver(() => postHeight());
+    ro.observe(document.documentElement);
+  } else {
+    // Fallback
+    setInterval(postHeight, 500);
+  }
+
+  // für Webfonts (optional hilfreich)
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(postHeight);
+  }
+})();
 </script>
+
     
 </body>
 </html>
