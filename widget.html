@@ -539,5 +539,21 @@
         });
 
     </script>
+<script>
+  function sendHeight() {
+    const height = Math.max(
+      document.body.scrollHeight,
+      document.documentElement.scrollHeight
+    );
+    window.parent.postMessage({ iframeHeight: height }, "*");
+  }
+
+  window.addEventListener("load", sendHeight);
+  window.addEventListener("resize", sendHeight);
+
+  // Falls Inhalte dynamisch laden (Bilder, Fonts, API, Animationen)
+  setInterval(sendHeight, 500);
+</script>
+    
 </body>
 </html>
